@@ -2,8 +2,8 @@
 Changelog for package leo_fw
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2024-11-18)
+------------------
 * Update firmware binaries (`#11 <https://github.com/LeoRover/leo_robot-ros2/issues/11>`_) (`#12 <https://github.com/LeoRover/leo_robot-ros2/issues/12>`_)
 * Fix mypy and pylint errors (`#14 <https://github.com/LeoRover/leo_robot-ros2/issues/14>`_)
 * Contributors: Błażej Sowa, mergify[bot]
