@@ -23,7 +23,6 @@
 #include <fstream>
 
 #include "rclcpp/rclcpp.hpp"
-#include "yaml-cpp/yaml.h"
 
 #include "nav_msgs/msg/odometry.hpp"
 #include "sensor_msgs/msg/imu.hpp"
@@ -33,8 +32,6 @@
 #include "leo_msgs/msg/wheel_odom.hpp"
 #include "leo_msgs/msg/wheel_odom_mecanum.hpp"
 #include "leo_msgs/msg/wheel_states.hpp"
-
-#include "leo_msgs/srv/set_imu_calibration.hpp"
 
 
 using namespace std::chrono_literals;
@@ -49,15 +46,6 @@ public:
   FirmwareMessageConverter(rclcpp::NodeOptions options)
   : Node("firmware_message_converter", options.use_intra_process_comms(true))
   {
-    calib_file_path = get_calib_path();
-    load_yaml_bias();
-    set_imu_calibration_service = create_service<leo_msgs::srv::SetImuCalibration>(
-      "set_imu_calibration",
-      std::bind(
-        &FirmwareMessageConverter::set_imu_calibration_callback, this,
-        std::placeholders::_1, std::placeholders::_2));
-
-
     robot_frame_id_ = declare_parameter("robot_frame_id", robot_frame_id_);
     odom_frame_id_ = declare_parameter("odom_frame_id", odom_frame_id_);
     imu_frame_id_ = declare_parameter("imu_frame_id", imu_frame_id_);
@@ -97,7 +85,7 @@ private:
   void wheel_odom_callback(const leo_msgs::msg::WheelOdom::SharedPtr msg) const
   {
     nav_msgs::msg::Odometry wheel_odom;
-    wheel_odom.header.frame_id = odom_frame_id_;
+    wheel_odom.header.frame_id = tf_frame_prefix_ + odom_frame_id_;
     wheel_odom.child_frame_id = tf_frame_prefix_ + robot_frame_id_;
     wheel_odom.header.stamp = msg->stamp;
     wheel_odom.twist.twist.linear.x = msg->velocity_lin;
@@ -118,7 +106,7 @@ private:
   void mecanum_odom_callback(const leo_msgs::msg::WheelOdomMecanum::SharedPtr msg) const
   {
     nav_msgs::msg::Odometry wheel_odom;
-    wheel_odom.header.frame_id = odom_frame_id_;
+    wheel_odom.header.frame_id = tf_frame_prefix_ + odom_frame_id_;
     wheel_odom.child_frame_id = tf_frame_prefix_ + robot_frame_id_;
     wheel_odom.header.stamp = msg->stamp;
     wheel_odom.twist.twist.linear.x = msg->velocity_lin_x;
@@ -142,9 +130,9 @@ private:
     sensor_msgs::msg::Imu imu;
     imu.header.frame_id = tf_frame_prefix_ + imu_frame_id_;
     imu.header.stamp = msg->stamp;
-    imu.angular_velocity.x = msg->gyro_x + imu_calibration_bias[0];
-    imu.angular_velocity.y = msg->gyro_y + imu_calibration_bias[1];
-    imu.angular_velocity.z = msg->gyro_z + imu_calibration_bias[2];
+    imu.angular_velocity.x = msg->gyro_x;
+    imu.angular_velocity.y = msg->gyro_y;
+    imu.angular_velocity.z = msg->gyro_z;
     imu.linear_acceleration.x = msg->accel_x;
     imu.linear_acceleration.y = msg->accel_y;
     imu.linear_acceleration.z = msg->accel_z;
@@ -157,69 +145,6 @@ private:
     }
 
     imu_pub_->publish(imu);
-  }
-
-  void set_imu_calibration_callback(
-    const std::shared_ptr<leo_msgs::srv::SetImuCalibration::Request> request,
-    std::shared_ptr<leo_msgs::srv::SetImuCalibration::Response> response)
-  {
-    RCLCPP_INFO(
-      get_logger(), "SetImuCalibration request for: [ %f, %f, %f]", request->gyro_bias_x,
-      request->gyro_bias_y, request->gyro_bias_z);
-
-    YAML::Node node = YAML::LoadFile(calib_file_path);
-    node["gyro_bias_x"] = imu_calibration_bias[0] = request->gyro_bias_x;
-    node["gyro_bias_y"] = imu_calibration_bias[1] = request->gyro_bias_y;
-    node["gyro_bias_z"] = imu_calibration_bias[2] = request->gyro_bias_z;
-    std::ofstream fout(calib_file_path);
-    fout << node;
-
-    response->success = true;
-  }
-
-  void load_yaml_bias()
-  {
-    YAML::Node node;
-    try {
-      node = YAML::LoadFile(calib_file_path);
-
-      if (node["gyro_bias_x"]) {
-        imu_calibration_bias[0] = node["gyro_bias_x"].as<float>();
-      }
-
-      if (node["gyro_bias_y"]) {
-        imu_calibration_bias[1] = node["gyro_bias_y"].as<float>();
-      }
-
-      if (node["gyro_bias_z"]) {
-        imu_calibration_bias[2] = node["gyro_bias_z"].as<float>();
-      }
-
-    } catch (YAML::BadFile & e) {
-      RCLCPP_WARN(get_logger(), "Calibration file doesn't exist.");
-      RCLCPP_WARN(get_logger(), "Creating calibration file with default gyrometer bias.");
-
-      node["gyro_bias_x"] = imu_calibration_bias[0];
-      node["gyro_bias_y"] = imu_calibration_bias[1];
-      node["gyro_bias_z"] = imu_calibration_bias[2];
-
-      std::ofstream fout(calib_file_path);
-      fout << node;
-    }
-  }
-
-  std::string get_calib_path()
-  {
-    std::string ros_home;
-    char * ros_home_env;
-    if (ros_home_env = std::getenv("ROS_HOME")) {
-      ros_home = ros_home_env;
-    } else if (ros_home_env = std::getenv("HOME")) {
-      ros_home = ros_home_env;
-      ros_home += "/.ros";
-    }
-
-    return ros_home + "/imu_calibration.yaml";
   }
 
   void timer_callback()
@@ -326,8 +251,6 @@ private:
   std::vector<double> imu_linear_acceleration_covariance_diagonal_ = {0.001, 0.001,
     0.001};
   std::string tf_frame_prefix_ = "";
-  std::vector<float> imu_calibration_bias = {0.0, 0.0, 0.0};
-  std::string calib_file_path = "";
 
   // Topic names
   std::string wheel_states_topic_;
@@ -349,9 +272,6 @@ private:
   rclcpp::Subscription<leo_msgs::msg::WheelOdom>::SharedPtr wheel_odom_sub_;
   rclcpp::Subscription<leo_msgs::msg::WheelOdomMecanum>::SharedPtr wheel_odom_mecanum_sub_;
   rclcpp::Subscription<leo_msgs::msg::Imu>::SharedPtr imu_sub_;
-
-  // Service
-  rclcpp::Service<leo_msgs::srv::SetImuCalibration>::SharedPtr set_imu_calibration_service;
 };
 
 }  // namespace leo_fw
