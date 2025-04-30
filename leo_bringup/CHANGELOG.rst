@@ -2,6 +2,15 @@
 Changelog for package leo_bringup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Improve ov5647 compression quality
+* Add `leo_filters` package (`#17 <https://github.com/LeoRover/leo_robot-ros2/issues/17>`_)
+* Fix camera config file path
+* Add parameter handling based on rover's model (`#19 <https://github.com/LeoRover/leo_robot-ros2/issues/19>`_)
+* New camera implementation (`#16 <https://github.com/LeoRover/leo_robot-ros2/issues/16>`_)
+* Contributors: Aleksander Szymański, Błażej Sowa, Jan Hernas
+
 2.0.0 (2024-11-18)
 ------------------
 * Add web_video_server to dependencies (`#13 <https://github.com/LeoRover/leo_robot-ros2/issues/13>`_) (`#15 <https://github.com/LeoRover/leo_robot-ros2/issues/15>`_)
