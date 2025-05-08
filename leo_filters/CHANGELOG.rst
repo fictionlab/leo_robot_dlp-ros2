@@ -2,8 +2,8 @@
 Changelog for package leo_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.3 (2025-05-08)
+------------------
 * Use target_link_libraries instead of ament_target_dependencies (`#24 <https://github.com/LeoRover/leo_robot-ros2/issues/24>`_)
 * Contributors: Błażej Sowa
 
