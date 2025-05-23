@@ -2,8 +2,8 @@
 Changelog for package leo_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.0 (2025-05-23)
+------------------
 * Don't use deprecated tf2 headers (`#25 <https://github.com/LeoRover/leo_robot-ros2/issues/25>`_)
 * Contributors: Błażej Sowa
 
