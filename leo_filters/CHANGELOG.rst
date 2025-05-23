@@ -2,6 +2,11 @@
 Changelog for package leo_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Don't use deprecated tf2 headers (`#25 <https://github.com/LeoRover/leo_robot-ros2/issues/25>`_)
+* Contributors: Błażej Sowa
+
 2.1.3 (2025-05-08)
 ------------------
 * Use target_link_libraries instead of ament_target_dependencies (`#24 <https://github.com/LeoRover/leo_robot-ros2/issues/24>`_)
