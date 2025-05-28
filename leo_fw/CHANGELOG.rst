@@ -2,8 +2,8 @@
 Changelog for package leo_fw
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.0 (2025-05-28)
+------------------
 * Change wheel_odom_with_covariance topic name to wheel_odom (`#30 <https://github.com/LeoRover/leo_robot-ros2/issues/30>`_)
 * Contributors: Błażej Sowa
 

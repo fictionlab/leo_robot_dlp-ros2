@@ -2,8 +2,8 @@
 Changelog for package leo_bringup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.0 (2025-05-28)
+------------------
 * Improve camera quality (`#33 <https://github.com/LeoRover/leo_robot-ros2/issues/33>`_)
   * Set camera tuning file for OV5647 NoIR
   * Increase ov5647 resolution

@@ -2,8 +2,8 @@
 Changelog for package leo_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.0 (2025-05-28)
+------------------
 * Add reset_calibration service to imu_filter (`#31 <https://github.com/LeoRover/leo_robot-ros2/issues/31>`_)
 * Change wheel odom topic in odom filter
 * Contributors: Błażej Sowa
