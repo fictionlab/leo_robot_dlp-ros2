@@ -2,6 +2,12 @@
 Changelog for package leo_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add reset_calibration service to imu_filter (`#31 <https://github.com/LeoRover/leo_robot-ros2/issues/31>`_)
+* Change wheel odom topic in odom filter
+* Contributors: Błażej Sowa
+
 2.2.0 (2025-05-23)
 ------------------
 * Don't use deprecated tf2 headers (`#25 <https://github.com/LeoRover/leo_robot-ros2/issues/25>`_)

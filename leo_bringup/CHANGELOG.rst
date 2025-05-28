@@ -2,6 +2,16 @@
 Changelog for package leo_bringup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Improve camera quality (`#33 <https://github.com/LeoRover/leo_robot-ros2/issues/33>`_)
+  * Set camera tuning file for OV5647 NoIR
+  * Increase ov5647 resolution
+  * Recalibrate camera for new resolution
+  * Change camera name for imx477
+  * Improve compression quality for imx477
+* Contributors: Błażej Sowa
+
 2.2.0 (2025-05-23)
 ------------------
 * Use services instead of topics for reboot and shutdown commands (`#28 <https://github.com/LeoRover/leo_robot-ros2/issues/28>`_)
