@@ -2,6 +2,11 @@
 Changelog for package leo_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Complementary filter improvements (`#34 <https://github.com/LeoRover/leo_robot-ros2/issues/34>`_)
+* Contributors: Jan Hernas
+
 2.3.0 (2025-05-28)
 ------------------
 * Add reset_calibration service to imu_filter (`#31 <https://github.com/LeoRover/leo_robot-ros2/issues/31>`_)
