@@ -1,0 +1,7 @@
+/**:
+  ros__parameters:
+    # Robot controller params
+    wheel_radius: 0.0635
+    wheel_separation: 0.354
+    wheel_base: 0.3052
+    angular_velocity_multiplier: 1.0

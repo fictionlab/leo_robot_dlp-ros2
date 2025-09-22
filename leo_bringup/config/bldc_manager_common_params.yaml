@@ -1,0 +1,19 @@
+/**:
+  ros__parameters:
+    # Node params
+    constant_dt: 0
+    max_linear_velocity: 5.0
+    max_angular_velocity: 4.8
+    robot_frame_id: "base_footprint"
+    odom_frame_id: "odom"
+    wheel_joint_names: ["wheel_FL_joint", "wheel_FR_joint", "wheel_RL_joint", "wheel_RR_joint"]
+    wheel_odom_twist_covariance_diagonal: [0.0001, 0.0, 0.0, 0.0, 0.0, 0.001]
+    wheel_odom_mecanum_twist_covariance_diagonal: [0.0001, 0.0001, 0.0, 0.0, 0.0, 0.001]
+    # Wheel controller params
+    max_torque: 1.5
+    pid_constants: [0.04, 0.25, 0.0]
+    pid_integral_max: 1.0
+    profile_velocity: 0.5
+    velocity_profile: false
+    # Robot controller params
+    input_timeout: 500

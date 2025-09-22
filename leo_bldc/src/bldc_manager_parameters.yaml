@@ -1,0 +1,123 @@
+bldc_manager:
+  # Node parameters
+  constant_dt:
+    type: int
+    default_value: 0
+    description: "Time difference (in miliseconds) to use for updating the state of RobotController. If set to 0, calculates time between loop calls."
+    read_only: false
+    validation:
+      bounds<>: [0, 50]
+  mecanum_wheels:
+    type: bool
+    default_value: false
+    description: "Whether the rover is driving on mecanum wheels or not."
+    read_only: false
+  max_linear_velocity:
+    type: double
+    default_value: 5.0
+    description: "Maximum velocity of the rover in linear axis (in m/s)."
+    read_only: false
+    validation:
+      bounds<>: [0.1, 8.0]
+  max_angular_velocity:
+    type: double
+    default_value: 4.8
+    description: "Maximum rotational velocity of the rover (in rad/s)."
+    read_only: false
+    validation:
+      bounds<>: [0.1, 8.0]
+  tf_frame_prefix:
+    type: string
+    default_value: ""
+    description: "The prefix added to each published TF frame id"
+  robot_frame_id:
+    type: string
+    default_value: "base_footprint"
+    description: "Name of the base TF frame of the robot."
+  odom_frame_id:
+    type: string
+    default_value: "odom"
+    description: "Name of the odom TF frame"
+  wheel_joint_names:
+    type: string_array
+    default_value: ["wheel_FL_joint", "wheel_FR_joint", "wheel_RL_joint", "wheel_RR_joint"]
+    description: "Names of the joints representing four wheels of the robot."
+  wheel_odom_twist_covariance_diagonal: 
+    type: double_array
+    default_value: [0.0001, 0.0, 0.0, 0.0, 0.0, 0.001]
+    description: "Values of the wheel odometry twist covariance matrix diagonal."
+  wheel_odom_mecanum_twist_covariance_diagonal: 
+    type: double_array
+    default_value: [0.0001, 0.0001, 0.0, 0.0, 0.0, 0.001]
+    description: "Values of the mecanum wheel odometry twist covariance matrix diagonal."
+  # Wheel controller parameters
+  max_torque:
+    type: double
+    default_value: 1.5
+    description: "Maximum torque of the motors (in Nm)."
+    read_only: false
+    validation:
+      bounds<>: [0.0, 3.0]
+  pid_constants:
+    type: double_array
+    default_value: [0.04, 0.25, 0.0]
+    description: "P, I, D constants (in that order) of the PID regulator for the motor in Wheel Controller."
+    read_only: false
+    validation:
+      element_bounds<>: [0.0, 1.0]
+  pid_integral_max:
+    type: double
+    default_value: 1.0
+    description: "Maximum limit for the integral component of PID regulator for the motor in Wheel Controller."
+    read_only: false
+    validation:
+      bounds<>: [0.0, 3.0]
+  profile_velocity:
+    type: double
+    default_value: 0.5
+    description: "Target velocity of the profile movement (in 1/s)."
+    read_only: false
+    validation:
+      bounds<>: [0.0, 10.0]
+  velocity_profile:
+    type: bool
+    default_value: false
+    description: Whether the motors are operating in velocity profile mode (otherwise velocity pid mode).
+  # Robot controller parameters
+  wheel_radius:
+    type: double
+    default_value: 0.0625
+    description: "The radius of the wheel (in meters)."
+    read_only: false
+    validation:
+      bounds<>: [0.01, 0.2]
+  wheel_separation:
+    type: double
+    default_value: 0.358
+    description: "The distance (in meters) between the centers of the left and right wheels."
+    read_only: false
+    validation:
+      bounds<>: [0.1, 1.0]
+  wheel_base:
+    type: double
+    default_value: 0.3052
+    description: "The distance (in meters) between the centers of the rear and front wheels."
+    read_only: false
+    validation:
+      bounds<>: [0.1, 1.0]
+  angular_velocity_multiplier:
+    type: double
+    default_value: 1.76
+    description: ""
+    read_only: false
+    validation:
+      bounds<>: [0.01, 5.0]
+  input_timeout:
+    type: int
+    default_value: 500
+    description: "The timeout (in miliseconds) for the RobotController to be disabled if it doesn't receive a command within the specified time. If set to 0, timeout is disabled."
+    read_only: false
+    validation:
+      bounds<>: [100, 2000]
+
+# 20 w sumie
