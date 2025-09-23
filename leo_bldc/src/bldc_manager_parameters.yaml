@@ -67,11 +67,18 @@ bldc_manager:
       gt<>: [0.0]
   profile_velocity:
     type: double
-    default_value: 0.5
-    description: "Target velocity of the profile movement (in 1/s)."
+    default_value:  6.0
+    description: "Target velocity of the profile movement (in rad/s)."
     read_only: false
     validation:
-      bounds<>: [0.0, 10.0]
+      bounds<>: [0.0, 60.0]
+  profile_acceleration:
+    type: double
+    default_value: 6.0
+    description: "Target profile acceleration of the profile movement (in rad/s^2)."
+    read_only: false
+    validation:
+      bounds<>: [0.0, 100.0]
   velocity_profile:
     type: bool
     default_value: false
@@ -112,5 +119,3 @@ bldc_manager:
     read_only: false
     validation:
       bounds<>: [100, 2000]
-
-# 20 w sumie
