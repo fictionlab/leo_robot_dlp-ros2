@@ -6,14 +6,15 @@
     max_angular_velocity: 4.8
     robot_frame_id: "base_footprint"
     odom_frame_id: "odom"
-    wheel_joint_names: ["wheel_FL_joint", "wheel_FR_joint", "wheel_RL_joint", "wheel_RR_joint"]
+    wheel_joint_names: ["wheel_RL_joint", "wheel_RR_joint", "wheel_FL_joint", "wheel_FR_joint"]
     wheel_odom_twist_covariance_diagonal: [0.0001, 0.0, 0.0, 0.0, 0.0, 0.001]
     wheel_odom_mecanum_twist_covariance_diagonal: [0.0001, 0.0001, 0.0, 0.0, 0.0, 0.001]
     # Wheel controller params
     max_torque: 1.5
     pid_constants: [0.04, 0.25, 0.0]
     pid_integral_max: 1.0
-    profile_velocity: 0.5
+    profile_velocity: 6.0
+    profile_acceleration: 6.0
     velocity_profile: false
     # Robot controller params
     input_timeout: 500
