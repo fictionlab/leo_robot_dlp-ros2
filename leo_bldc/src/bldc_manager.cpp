@@ -83,7 +83,7 @@ BLDCManager::BLDCManager(rclcpp::NodeOptions options)
     10ms, std::bind(&BLDCManager::update, this));
 
   loop_timer_ = create_wall_timer(
-    1s/30.0, std::bind(&BLDCManager::publish_msgs, this));
+    1s / 30.0, std::bind(&BLDCManager::publish_msgs, this));
   RCLCPP_INFO(get_logger(), "Started node");
 }
 
@@ -137,6 +137,7 @@ RobotParams BLDCManager::parse_parameters()
   rp.wheel_pid_d = params_.pid_constants[2];
   rp.wheel_pid_int_max = params_.pid_integral_max;
   rp.profile_velocity = params_.profile_velocity;
+  rp.profile_acceleration = params_.profile_acceleration;
   rp.op_mode =
     params_.velocity_profile ? WheelOperationMode::VELOCITY_PROFILE :
     WheelOperationMode::VELOCITY_PID;
