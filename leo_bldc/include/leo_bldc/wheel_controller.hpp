@@ -72,8 +72,11 @@ struct WheelParams
   // Maximum limit for the integral component of PID regulator.
   float wheel_pid_int_max;
 
-  // Target velocity of the profile movement (in s^-1).
+  // Target velocity of the profile movement (in rad/s).
   float profile_velocity;
+
+  // Target profile acceleration of the profile movement (in rad/s^2).
+  float profile_acceleration;
 
   // The operation mode to use.
   WheelOperationMode op_mode = WheelOperationMode::VELOCITY_PID;
@@ -166,7 +169,7 @@ public:
       double time = (recent_positon.second - oldest_postion.second).seconds();
       return distance / time;
     }
-    
+
     std::pair<float, mab::MD::Error_t> velocity = motor_->getVelocity();
     if (velocity.second == mab::MD::Error_t::OK) {
       return reversed_ ? -velocity.first : velocity.first;
@@ -215,6 +218,10 @@ public:
       motor_->setProfileVelocity(params.profile_velocity);
     }
 
+    if (params_.profile_acceleration != params.profile_acceleration || init) {
+      motor_->setProfileAcceleration(params.profile_acceleration);
+    }
+
     updatePid(params.wheel_pid_p, params.wheel_pid_i, params.wheel_pid_d, params.wheel_pid_int_max);
     params_ = params;
   }
@@ -223,7 +230,8 @@ public:
    * Perform an update routine.
    * @param timestamp Time at which call to update function happened
    */
-  void update(rclcpp::Time timestamp) {
+  void update(rclcpp::Time timestamp)
+  {
     double position = getPosition();
     position_buffer_.push_back({position, timestamp});
   }
