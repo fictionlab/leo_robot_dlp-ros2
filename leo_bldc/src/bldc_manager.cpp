@@ -62,12 +62,12 @@ BLDCManager::BLDCManager(rclcpp::NodeOptions options)
     std::bind(&BLDCManager::cmd_vel_callback, this, _1));
 
   std::array<std::string, 4> wheel_cmd_vel_topics = {
-    "~/wheel_FL/cmd_velocity",
-    "~/wheel_FR/cmd_velocity",
     "~/wheel_RL/cmd_velocity",
-    "~/wheel_RR/cmd_velocity"
+    "~/wheel_RR/cmd_velocity",
+    "~/wheel_FL/cmd_velocity",
+    "~/wheel_FR/cmd_velocity"
   };
-  wheel_ids_ = {WheelID::FL, WheelID::FR, WheelID::RL, WheelID::RR};
+  wheel_ids_ = {WheelID::RL, WheelID::RR, WheelID::FL, WheelID::FR};
 
   for (int i = 0; i < 4; ++i) {
     wheel_cmd_vel_subs_[i] = create_subscription<std_msgs::msg::Float32>(
@@ -80,7 +80,7 @@ BLDCManager::BLDCManager(rclcpp::NodeOptions options)
   }
 
   update_timer_ = create_wall_timer(
-    2ms, std::bind(&BLDCManager::update, this));
+    10ms, std::bind(&BLDCManager::update, this));
 
   loop_timer_ = create_wall_timer(
     1s/30.0, std::bind(&BLDCManager::publish_msgs, this));
@@ -229,15 +229,9 @@ void BLDCManager::update()
     controller_->updateParams(parse_parameters());
   }
 
-  uint32_t dt;
-  if (params_.constant_dt > 0) {
-    dt = params_.constant_dt;
-  } else {
-    dt = (current_time - *last_update_time_).seconds() * 1000.0;
-  }
-  dt = static_cast<uint32_t>(dt);
+  uint32_t dt = static_cast<uint32_t>((current_time - *last_update_time_).seconds() * 1000.0);
 
-  controller_->update(dt);
+  controller_->update(dt, current_time);
 
 
   last_update_time_ = current_time;

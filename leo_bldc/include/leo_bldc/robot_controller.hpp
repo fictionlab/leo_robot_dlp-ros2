@@ -25,6 +25,7 @@
 #include "leo_bldc/wheel_controller.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
+#include "rclcpp/time.hpp"
 
 namespace leo_bldc
 {
@@ -64,14 +65,14 @@ public:
   RobotController(const RobotConfiguration & robot_conf)
   : candle_(mab::attachCandle(mab::CANdleDatarate_E::CAN_DATARATE_1M,
       mab::candleTypes::busTypes_t::USB)),
-    wheels_{{WheelController(robot_conf.wheel_FL_conf, candle_),
-        WheelController(robot_conf.wheel_FR_conf, candle_),
-        WheelController(robot_conf.wheel_RL_conf, candle_),
-        WheelController(robot_conf.wheel_RR_conf, candle_)}},
-    wheel_FL(wheels_[0]),
-    wheel_FR(wheels_[1]),
-    wheel_RL(wheels_[2]),
-    wheel_RR(wheels_[3])
+    wheels_{{WheelController(robot_conf.wheel_RL_conf, candle_),
+        WheelController(robot_conf.wheel_RR_conf, candle_),
+        WheelController(robot_conf.wheel_FL_conf, candle_),
+        WheelController(robot_conf.wheel_FR_conf, candle_)}},
+    wheel_RL(wheels_[0]),
+    wheel_RR(wheels_[1]),
+    wheel_FL(wheels_[2]),
+    wheel_FR(wheels_[3])
   {
     if (!candle_) {
       throw std::runtime_error("Failed to attach CANdle!");
@@ -157,7 +158,7 @@ public:
    * Perform an update routine.
    * @param dt_ms Time elapsed since the last call to update function.
    */
-  virtual void update(uint32_t dt_ms) = 0;
+  virtual void update(uint32_t dt_ms, rclcpp::Time current_time) = 0;
 
   /**
    * Enable the controller.

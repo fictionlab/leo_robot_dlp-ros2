@@ -22,6 +22,7 @@
 #include "mab_types.hpp"
 #include "MD.hpp"
 
+#include "leo_bldc/circular_buffer.hpp"
 
 namespace leo_bldc
 {
@@ -157,6 +158,15 @@ public:
    */
   double getVelocity() const
   {
+    if (position_buffer_.filled_) {
+      std::pair<double, rclcpp::Time> recent_positon = position_buffer_.get_recent();
+      std::pair<double, rclcpp::Time> oldest_postion = position_buffer_.get_oldest();
+
+      double distance = recent_positon.first - oldest_postion.first;
+      double time = (recent_positon.second - oldest_postion.second).seconds();
+      return distance / time;
+    }
+    
     std::pair<float, mab::MD::Error_t> velocity = motor_->getVelocity();
     if (velocity.second == mab::MD::Error_t::OK) {
       return reversed_ ? -velocity.first : velocity.first;
@@ -209,6 +219,15 @@ public:
     params_ = params;
   }
 
+  /**
+   * Perform an update routine.
+   * @param timestamp Time at which call to update function happened
+   */
+  void update(rclcpp::Time timestamp) {
+    double position = getPosition();
+    position_buffer_.push_back({position, timestamp});
+  }
+
 private:
   /**
    * Update PID constants and maximum limit for I component
@@ -251,6 +270,7 @@ private:
 
   std::unique_ptr<mab::MD> motor_;
   WheelParams params_;
+  CircularBuffer<std::pair<double, rclcpp::Time>, 100> position_buffer_;
   bool enabled_{};
   bool connected_{};
   bool reversed_{};

@@ -51,11 +51,15 @@ public:
     this->wheel_RR.setTargetVelocity(wheel_R_ang_vel);
   }
 
-  void update(uint32_t dt_ms) override
+  void update(uint32_t dt_ms, rclcpp::Time current_time) override
   {
     if (this->enabled_ && this->params_.robot_input_timeout > 0) {
       this->last_command_time_remaining_ -= dt_ms;
       if (this->last_command_time_remaining_ < 0) {this->disable();}
+    }
+
+    for (auto& wheel : wheels_) {
+      wheel.update(current_time);
     }
 
     // velocity in radians per second
