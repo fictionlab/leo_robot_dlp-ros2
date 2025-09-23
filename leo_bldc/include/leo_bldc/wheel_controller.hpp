@@ -234,7 +234,7 @@ private:
    * @param p P constant of PID regulator
    * @param i I constant of PID regulator
    * @param d D constant of PID regulator
-   * @param int_max Maximum limit for the I component of PID regulator.
+   * @param int_max Maximum output of the integral component of PID regulator (in [rad/s]).
    */
   void updatePid(float p, float i, float d, float int_max)
   {
