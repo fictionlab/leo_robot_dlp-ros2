@@ -1,12 +1,5 @@
 bldc_manager:
   # Node parameters
-  constant_dt:
-    type: int
-    default_value: 0
-    description: "Time difference (in miliseconds) to use for updating the state of RobotController. If set to 0, calculates time between loop calls."
-    read_only: false
-    validation:
-      bounds<>: [0, 50]
   mecanum_wheels:
     type: bool
     default_value: false
@@ -64,14 +57,14 @@ bldc_manager:
     description: "P, I, D constants (in that order) of the PID regulator for the motor in Wheel Controller."
     read_only: false
     validation:
-      element_bounds<>: [0.0, 1.0]
+      lower_element_bounds<>: [0.0] 
   pid_integral_max:
     type: double
     default_value: 1.0
-    description: "Maximum limit for the integral component of PID regulator for the motor in Wheel Controller."
+    description: "Maximum output of the integral component of PID regulator for the motor in Wheel Controller (in rad/s)."
     read_only: false
     validation:
-      bounds<>: [0.0, 3.0]
+      gt<>: [0.0]
   profile_velocity:
     type: double
     default_value: 0.5
