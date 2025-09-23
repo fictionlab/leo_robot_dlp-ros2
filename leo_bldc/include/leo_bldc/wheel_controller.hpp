@@ -183,7 +183,10 @@ public:
   double getTorque() const
   {
     std::pair<float, mab::MD::Error_t> torque = motor_->getTorque();
-    return torque.second == mab::MD::Error_t::OK ? torque.first : -1.0;
+    if (torque.second == mab::MD::Error_t::OK) {
+      return reversed_ ? -torque.first : torque.first;
+    }
+    return -1.0;
   }
 
   /**
