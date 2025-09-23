@@ -1,7 +1,6 @@
 /**:
   ros__parameters:
     # Node params
-    constant_dt: 0
     max_linear_velocity: 5.0
     max_angular_velocity: 4.8
     robot_frame_id: "base_footprint"
