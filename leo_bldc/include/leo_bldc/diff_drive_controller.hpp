@@ -49,13 +49,27 @@ public:
     this->wheel_RL.setTargetVelocity(wheel_L_ang_vel);
     this->wheel_FR.setTargetVelocity(wheel_R_ang_vel);
     this->wheel_RR.setTargetVelocity(wheel_R_ang_vel);
+
+    this->target_vel_zero_ = std::abs(linear_x) <= 0.01 && std::abs(angular) <= 0.02;
   }
 
   void update(uint32_t dt_ms, rclcpp::Time current_time) override
   {
     if (this->enabled_ && this->params_.robot_input_timeout > 0) {
       this->last_command_time_remaining_ -= dt_ms;
-      if (this->last_command_time_remaining_ < 0) {this->disable();}
+      if (this->last_command_time_remaining_ < 0) {
+        this->target_vel_zero_ = true;
+        this->disable();
+      }
+    }
+
+    if (this->robotNotMoving() && this->target_vel_zero_) {
+      this-> motors_loosen_time_remaining_ -= dt_ms;
+      if (this->motors_loosen_time_remaining_ < 0) {
+        this->resetEffort();
+      }
+    } else {
+      this->motors_loosen_time_remaining_ = this->params_.effort_reset_timeout;
     }
 
     for (auto& wheel : wheels_) {

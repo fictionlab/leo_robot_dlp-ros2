@@ -58,6 +58,10 @@ struct RobotParams : WheelParams
   // will be disabled if it does not receive a command within the specified
   // time. If set to 0, the timeout is disabled.
   int robot_input_timeout;
+
+  // The time (in milliseconds) the robot must remain still before motor 
+  // unnecessary efforts are reset.
+  int effort_reset_timeout;
 };
 
 class RobotController {
@@ -80,7 +84,7 @@ public:
   }
   ~RobotController()
   {
-    for(auto &wheel : wheels_) {
+    for(auto & wheel : wheels_) {
       wheel.~WheelController();
     }
     mab::detachCandle(candle_);
@@ -92,7 +96,7 @@ public:
    */
   void init(const RobotParams & params)
   {
-    for(auto &wheel : wheels_) {
+    for(auto & wheel : wheels_) {
       wheel.init(params);
     }
     params_ = params;
@@ -104,7 +108,7 @@ public:
    */
   void updateParams(const RobotParams & params)
   {
-    for(auto &wheel : wheels_) {
+    for(auto & wheel : wheels_) {
       wheel.updateParams(params);
     }
     params_ = params;
@@ -166,7 +170,7 @@ public:
    */
   void enable()
   {
-    for(auto &wheel : wheels_) {
+    for(auto & wheel : wheels_) {
       wheel.enable();
     }
     enabled_ = true;
@@ -178,10 +182,20 @@ public:
    */
   void disable()
   {
-    for(auto &wheel : wheels_) {
+    for(auto & wheel : wheels_) {
       wheel.disable();
     }
     enabled_ = false;
+  }
+
+  /**
+   * Clear errors present in all wheel motor drivers.
+   */
+  void clearErrors()
+  {
+    for(auto & wheel : wheels_) {
+      wheel.clearErrors();
+    }
   }
 
   /**
@@ -202,10 +216,56 @@ private:
   mab::Candle * candle_;
 
 protected:
+  /**
+   * Reset unnecessary efforts on the motors.
+   * Checs if the motors hold effort from previous movement 
+   * and resets them if those are unnecessary.
+   */
+  void resetEffort() {
+    std::vector<double> efforts;
+    std::vector<int> signs;
+
+    for(auto & wheel : wheels_) {
+      double effort = wheel.getTorque();
+      efforts.push_back(effort);
+      signs.push_back(effort > 0 ? 1 : -1);
+    }
+    
+    int sum = 0;
+    for(int i = 0; i < 4; i ++) {
+      sum += signs[i];
+    }
+
+    bool has_effort = std::all_of(efforts.begin(), efforts.end(), [](double e){ return std::abs(e) > 0.01; });
+
+    if (std::abs(sum) != 4 && has_effort) {
+      for(auto & wheel : wheels_) {
+        wheel.resetEffort();
+      }
+    }
+  }
+
+  /**
+   * Check if robot is not moving. 
+   * Checks if all motors are stopped.
+   */
+  bool robotNotMoving() {
+    for(auto & wheel : wheels_) {
+      if (wheel.isMoving()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+
   nav_msgs::msg::Odometry odom_{};
   double pose_yaw_;
   bool enabled_ = false;
+  bool target_vel_zero_ = true;
   int last_command_time_remaining_;
+  int motors_loosen_time_remaining_;
   RobotParams params_;
 
   // Wheel controllers

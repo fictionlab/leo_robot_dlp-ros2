@@ -27,7 +27,7 @@
 namespace leo_bldc
 {
 
-enum class WheelOperationMode { VELOCITY_PROFILE, VELOCITY_PID };
+enum class WheelOperationMode { VELOCITY_PROFILE, VELOCITY_PID, IDLE };
 
 enum class WheelID {FL, RL, FR, RR};
 inline std::string wheelID_to_string(WheelID id)
@@ -79,7 +79,7 @@ struct WheelParams
   float profile_acceleration;
 
   // The operation mode to use.
-  WheelOperationMode op_mode = WheelOperationMode::VELOCITY_PID;
+  WheelOperationMode op_mode;
 };
 
 class WheelController {
@@ -107,9 +107,8 @@ public:
    */
   void init(const WheelParams & params)
   {
-    updateParams(params, true);
     motor_->zero();
-    enable();
+    updateParams(params);
     setTargetVelocity(0);
   }
 
@@ -118,10 +117,14 @@ public:
    * Enable the controller.
    * Enables sending PWM commands to the motor.
   */
-  void enable()
+  void enable(bool set_mode = true)
   {
     if (!enabled_) {
-      setMotionMode(params_);
+      if (set_mode) {
+        // motion mode needs to be set on disabled motor
+        // don't set the mode if the call to this function was made from updateParams.
+        setMotionMode(params_.op_mode);
+      }
       motor_->enable();
       enabled_ = true;
     }
@@ -143,6 +146,14 @@ public:
    * Check if Wheel Controller connected to its motor.
    */
   bool isConnected() const {return connected_;}
+
+  /**
+   * Clear errors present in the driver.
+   */
+  void clearErrors()
+  {
+    motor_->clearErrors();
+  }
 
   /**
    * Get the current position of the motor (in rad).
@@ -207,26 +218,31 @@ public:
    * @param init Flag specifying if this function is called during
    * initialization of Wheel Controller.
    */
-  void updateParams(const WheelParams & params, bool init = false)
+  void updateParams(const WheelParams & params)
   {
-    if (params_.max_torque != params.max_torque || init) {
+    if (params_.max_torque != params.max_torque) {
       motor_->setMaxTorque(params.max_torque);
     }
 
-    if (params_.op_mode != params.op_mode) {
-      setMotionMode(params);
-    }
-
-    if (params_.profile_velocity != params.profile_velocity || init) {
+    if (params_.profile_velocity != params.profile_velocity) {
       motor_->setProfileVelocity(params.profile_velocity);
     }
-
-    if (params_.profile_acceleration != params.profile_acceleration || init) {
+    
+    if (params_.profile_acceleration != params.profile_acceleration) {
       motor_->setProfileAcceleration(params.profile_acceleration);
     }
+    
+    updatePID(params.wheel_pid_p, params.wheel_pid_i, params.wheel_pid_d, params.wheel_pid_int_max);
 
-    updatePid(params.wheel_pid_p, params.wheel_pid_i, params.wheel_pid_d, params.wheel_pid_int_max);
+    bool new_motion_mode = params_.op_mode != params.op_mode;
     params_ = params;
+
+    if (new_motion_mode) {
+      disable();
+      setMotionMode(params_.op_mode);
+      // if (params_.op_mode != WheelOperationMode::IDLE)
+        enable(false);
+    }
   }
 
   /**
@@ -239,6 +255,24 @@ public:
     position_buffer_.push_back({position, timestamp});
   }
 
+  /**
+   * Reset effort on the motor.
+   */
+  void resetEffort() {
+    // motor_->setVelocityPIDparam(params_.wheel_pid_p, params_.wheel_pid_i, params_.wheel_pid_d, 0.0);
+    // motor_->setVelocityPIDparam(params_.wheel_pid_p, params_.wheel_pid_i, params_.wheel_pid_d, params_.wheel_pid_int_max);
+    disable();
+    enable();
+  }
+
+  /**
+   * Check if the wheel is currently rotating.
+   */
+  bool isMoving() const 
+  {
+    return std::abs(getVelocity()) > 0.02;
+  }
+
 private:
   /**
    * Update PID constants and maximum limit for I component
@@ -247,7 +281,7 @@ private:
    * @param d D constant of PID regulator
    * @param int_max Maximum output of the integral component of PID regulator (in [rad/s]).
    */
-  void updatePid(float p, float i, float d, float int_max)
+  void updatePID(float p, float i, float d, float int_max)
   {
     if (p != params_.wheel_pid_p ||
       i != params_.wheel_pid_i ||
@@ -262,17 +296,23 @@ private:
    * The motion mode to be set is also determined from parameters.
    * @param params Parameters with the properties to be set.
    */
-  void setMotionMode(const WheelParams & params)
+  void setMotionMode(const WheelOperationMode & mode)
   {
-    switch (params.op_mode) {
+    switch (mode) {
       case WheelOperationMode::VELOCITY_PID:
+        motor_->setVelocityPIDparam(params_.wheel_pid_p, params_.wheel_pid_i, params_.wheel_pid_d,
+          params_.wheel_pid_int_max);
         motor_->setMotionMode(mab::MdMode_E::VELOCITY_PID);
-        motor_->setVelocityPIDparam(params.wheel_pid_p, params.wheel_pid_i, params.wheel_pid_d,
-            params.wheel_pid_int_max);
         break;
       case WheelOperationMode::VELOCITY_PROFILE:
+        motor_->setVelocityPIDparam(params_.wheel_pid_p, params_.wheel_pid_i, params_.wheel_pid_d,
+          params_.wheel_pid_int_max);
+        motor_->setProfileVelocity(params_.profile_velocity);
+        motor_->setProfileAcceleration(params_.profile_acceleration);
         motor_->setMotionMode(mab::MdMode_E::VELOCITY_PROFILE);
-        motor_->setProfileVelocity(params.profile_velocity);
+        break;
+      case WheelOperationMode::IDLE:
+        motor_->setMotionMode(mab::MdMode_E::IDLE);
         break;
       default:
         break;
