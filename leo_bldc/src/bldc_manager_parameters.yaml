@@ -50,17 +50,17 @@ bldc_manager:
     description: "Maximum torque of the motors (in Nm)."
     read_only: false
     validation:
-      bounds<>: [0.0, 3.0]
+      bounds<>: [0.0, 10.0]
   pid_constants:
     type: double_array
-    default_value: [0.04, 0.25, 0.0]
+    default_value: [0.06, 0.3, 0.0]
     description: "P, I, D constants (in that order) of the PID regulator for the motor in Wheel Controller."
     read_only: false
     validation:
       lower_element_bounds<>: [0.0] 
   pid_integral_max:
     type: double
-    default_value: 1.0
+    default_value: 100.0
     description: "Maximum output of the integral component of PID regulator for the motor in Wheel Controller (in rad/s)."
     read_only: false
     validation:
@@ -79,10 +79,12 @@ bldc_manager:
     read_only: false
     validation:
       bounds<>: [0.0, 100.0]
-  velocity_profile:
-    type: bool
-    default_value: false
-    description: Whether the motors are operating in velocity profile mode (otherwise velocity pid mode).
+  motion_mode:
+    type: int
+    default_value: 0
+    description: "Motor motion mode: 0 - VELOCITY_PID, 1 - VELOCITY_PROFILE, 2 - IDLE."
+    validation:
+      bounds<>: [0, 2]
   # Robot controller parameters
   wheel_radius:
     type: double
@@ -116,6 +118,13 @@ bldc_manager:
     type: int
     default_value: 500
     description: "The timeout (in miliseconds) for the RobotController to be disabled if it doesn't receive a command within the specified time. If set to 0, timeout is disabled."
+    read_only: false
+    validation:
+      bounds<>: [100, 2000]
+  effort_timeout:
+    type: int
+    default_value: 500
+    description: "The time (in milliseconds) the robot must remain still before motor unnecessary efforts are reset."
     read_only: false
     validation:
       bounds<>: [100, 2000]
