@@ -17,3 +17,4 @@
     velocity_profile: false
     # Robot controller params
     input_timeout: 500
+    effort_timeout: 500
