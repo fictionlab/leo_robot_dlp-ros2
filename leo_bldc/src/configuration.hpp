@@ -25,11 +25,13 @@
 constexpr leo_bldc::RobotConfiguration ROBOT_CONFIG = {
   .wheel_FL_conf =
   {
-    .id = 30
+    .id = 30,
+    .reversed = false,
   },
   .wheel_RL_conf =
   {
     .id = 10,
+    .reversed = false,
   },
   .wheel_FR_conf =
   {
