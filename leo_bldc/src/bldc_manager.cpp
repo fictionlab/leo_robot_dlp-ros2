@@ -51,6 +51,9 @@ BLDCManager::BLDCManager(rclcpp::NodeOptions options)
   reset_odom_srv_ = create_service<std_srvs::srv::Trigger>(
     "~/reset_odometry",
     std::bind(&BLDCManager::reset_odom_callback, this, _1, _2));
+  clear_motor_errors_srv_ = create_service<std_srvs::srv::Trigger>(
+    "~/clear_motor_errors",
+    std::bind(&BLDCManager::clear_errors_callback, this, _1, _2));
 
   wheel_odom_pub_ =
     create_publisher<nav_msgs::msg::Odometry>("wheel_odom", 10);
@@ -138,9 +141,21 @@ RobotParams BLDCManager::parse_parameters()
   rp.wheel_pid_int_max = params_.pid_integral_max;
   rp.profile_velocity = params_.profile_velocity;
   rp.profile_acceleration = params_.profile_acceleration;
-  rp.op_mode =
-    params_.velocity_profile ? WheelOperationMode::VELOCITY_PROFILE :
-    WheelOperationMode::VELOCITY_PID;
+
+  switch (params_.motion_mode)
+  {
+  case 0:
+    rp.op_mode = WheelOperationMode::VELOCITY_PID;
+    break;
+  case 1:
+    rp.op_mode = WheelOperationMode::VELOCITY_PROFILE;
+    break;
+  case 2:
+    rp.op_mode = WheelOperationMode::IDLE;
+    break;
+  default:
+    break;
+  }
 
   // robot controller params
   rp.robot_wheel_radius = params_.wheel_radius;
@@ -148,6 +163,7 @@ RobotParams BLDCManager::parse_parameters()
   rp.robot_wheel_base = params_.wheel_base;
   rp.robot_angular_velocity_multiplier = params_.angular_velocity_multiplier;
   rp.robot_input_timeout = params_.input_timeout;
+  rp.effort_reset_timeout = params_.effort_timeout;
 
   return rp;
 }
@@ -204,6 +220,21 @@ void BLDCManager::reset_odom_callback(
 
     res->success = true;
     res->message = "Odometry reset successful.";
+  } else {
+    res->success = false;
+    res->message = "Controller not initialized.";
+  }
+}
+
+void BLDCManager::clear_errors_callback(
+  const std_srvs::srv::Trigger::Request::SharedPtr req,
+  std_srvs::srv::Trigger::Response::SharedPtr res)
+{
+  if (controller_initialized_) {
+    controller_->clearErrors();
+
+    res->success = true;
+    res->message = "Error clearence successful.";
   } else {
     res->success = false;
     res->message = "Controller not initialized.";

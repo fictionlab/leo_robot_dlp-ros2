@@ -54,6 +54,9 @@ private:
   void reset_odom_callback(
     const std_srvs::srv::Trigger::Request::SharedPtr req,
     std_srvs::srv::Trigger::Response::SharedPtr res);
+  void clear_errors_callback(
+    const std_srvs::srv::Trigger::Request::SharedPtr req,
+    std_srvs::srv::Trigger::Response::SharedPtr res);
   void update();
   void publish_msgs();
 
@@ -68,6 +71,7 @@ private:
 
   // Services
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr reset_odom_srv_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr clear_motor_errors_srv_;
 
   // Timers
   rclcpp::TimerBase::SharedPtr update_timer_;
