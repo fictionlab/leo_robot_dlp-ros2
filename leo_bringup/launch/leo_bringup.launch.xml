@@ -53,7 +53,7 @@
     <param from="$(find-pkg-share leo_bringup)/config/firmware_message_converter.yaml" />
   </node>
 
-  <include file="$(find-pkg-share leo_bldc)/launch/bldc_manager.launch.py" />
+  <include file="$(find-pkg-share leo_bldc)/launch/bldc_manager.launch.py">
     <arg name="mecanum_wheels" value="$(var mecanum_wheels)" />
     <arg name="tf_frame_prefix" value="$(var tf_frame_prefix)" />
   </include>
