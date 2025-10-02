@@ -48,6 +48,11 @@ BLDCManager::BLDCManager(rclcpp::NodeOptions options)
   params_ = param_listener_.get_params();
   init_controller();
 
+  if (!controller_initialized_) {
+    RCLCPP_ERROR(get_logger(), "Cannot start node");
+    return;
+  }
+
   reset_odom_srv_ = create_service<std_srvs::srv::Trigger>(
     "~/reset_odometry",
     std::bind(&BLDCManager::reset_odom_callback, this, _1, _2));
@@ -141,6 +146,7 @@ RobotParams BLDCManager::parse_parameters()
   rp.wheel_pid_int_max = params_.pid_integral_max;
   rp.profile_velocity = params_.profile_velocity;
   rp.profile_acceleration = params_.profile_acceleration;
+  rp.min_velocity = params_.min_velocity;
 
   switch (params_.motion_mode)
   {

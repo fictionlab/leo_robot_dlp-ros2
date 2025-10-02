@@ -78,6 +78,9 @@ struct WheelParams
   // Target profile acceleration of the profile movement (in rad/s^2).
   float profile_acceleration;
 
+  // Minimal velocity for wheel to be considered in motion (in rad/s).
+  float min_velocity;
+
   // The operation mode to use.
   WheelOperationMode op_mode;
 };
@@ -270,7 +273,7 @@ public:
    */
   bool isMoving() const 
   {
-    return std::abs(getVelocity()) > 0.02;
+    return std::abs(getVelocity()) > params_.min_velocity;
   }
 
 private:

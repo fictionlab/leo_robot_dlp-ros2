@@ -85,6 +85,12 @@ bldc_manager:
     description: "Motor motion mode: 0 - VELOCITY_PID, 1 - VELOCITY_PROFILE, 2 - IDLE."
     validation:
       bounds<>: [0, 2]
+  min_velocity:
+    type: double
+    default_value: 0.1
+    description: "Minimal velocity for a wheel to be considered in motion (in rad/s)."
+    validation:
+      bounds: [0.0, 1.0]
   # Robot controller parameters
   wheel_radius:
     type: double
