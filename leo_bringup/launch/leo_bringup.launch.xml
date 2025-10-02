@@ -53,17 +53,10 @@
     <param from="$(find-pkg-share leo_bringup)/config/firmware_message_converter.yaml" />
   </node>
 
-  <let if="$(var mecanum_wheels)" name="controller_params_file"
-    value="$(find-pkg-share leo_bringup)/config/bldc_manager_mecanum_params.yaml" />
-  <let unless="$(var mecanum_wheels)" name="controller_params_file"
-    value="$(find-pkg-share leo_bringup)/config/bldc_manager_diff_drive_params.yaml" />
-
-  <node pkg="leo_bldc" exec="bldc_manager">
-    <param name="tf_frame_prefix" value="$(var tf_frame_prefix)" />
-    <param name="mecanum_wheels" value="$(var mecanum_wheels)" />
-    <param from="$(find-pkg-share leo_bringup)/config/bldc_manager_common_params.yaml" />
-    <param from="$(var controller_params_file)" />
-  </node>
+  <include file="$(find-pkg-share leo_bldc)/launch/bldc_manager.launch.py" />
+    <arg name="mecanum_wheels" value="$(var mecanum_wheels)" />
+    <arg name="tf_frame_prefix" value="$(var tf_frame_prefix)" />
+  </include>
 
   <node pkg="leo_filters" exec="imu_filter">
     <param from="$(find-pkg-share leo_bringup)/config/imu_filter.yaml" />
