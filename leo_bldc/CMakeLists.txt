@@ -54,6 +54,12 @@ install(
 )
 
 install(
+  DIRECTORY
+    launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(
   TARGETS ${PROJECT_NAME} candle
   # EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
