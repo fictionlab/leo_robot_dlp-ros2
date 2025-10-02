@@ -66,17 +66,18 @@ struct RobotParams : WheelParams
 
 class RobotController {
 public:
-  RobotController(const RobotConfiguration & robot_conf)
+  RobotController(const RobotConfiguration & robot_conf, rclcpp::Logger logger)
   : candle_(mab::attachCandle(mab::CANdleDatarate_E::CAN_DATARATE_1M,
       mab::candleTypes::busTypes_t::USB)),
-    wheels_{{WheelController(robot_conf.wheel_RL_conf, candle_),
-        WheelController(robot_conf.wheel_RR_conf, candle_),
-        WheelController(robot_conf.wheel_FL_conf, candle_),
-        WheelController(robot_conf.wheel_FR_conf, candle_)}},
+    wheels_{{WheelController(robot_conf.wheel_RL_conf, candle_, WheelID::RL),
+        WheelController(robot_conf.wheel_RR_conf, candle_, WheelID::RR),
+        WheelController(robot_conf.wheel_FL_conf, candle_, WheelID::FL),
+        WheelController(robot_conf.wheel_FR_conf, candle_, WheelID::FR)}},
     wheel_RL(wheels_[0]),
     wheel_RR(wheels_[1]),
     wheel_FL(wheels_[2]),
-    wheel_FR(wheels_[3])
+    wheel_FR(wheels_[3]),
+    logger_(logger)
   {
     if (!candle_) {
       throw std::runtime_error("Failed to attach CANdle!");
@@ -201,15 +202,17 @@ public:
   /**
    * Get statuses of all wheel motor connections.
    */
-  std::array<bool, 4> getwheelsConnections() const
+  bool wheelsConnected() const
   {
-    return {{
-      wheels_[0].isConnected(),
-      wheels_[1].isConnected(),
-      wheels_[2].isConnected(),
-      wheels_[3].isConnected()
-    }};
+    bool connected = true;
+    
+    for (auto & wheel : wheels_)
+      if (!wheel.isConnected()) {
+        RCLCPP_ERROR_STREAM(logger_, "Wheel " << wheel.getID() << " not connected!");
+        connected = false;
+      }
 
+    return connected;
   }
 
 private:
@@ -267,6 +270,7 @@ protected:
   int last_command_time_remaining_;
   int motors_loosen_time_remaining_;
   RobotParams params_;
+  rclcpp::Logger logger_;
 
   // Wheel controllers
   std::array<WheelController, 4> wheels_;

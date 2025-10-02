@@ -87,8 +87,8 @@ struct WheelParams
 
 class WheelController {
 public:
-  WheelController(const WheelConfiguration & wheel_conf, mab::Candle * candle)
-  : reversed_(wheel_conf.reversed)
+  WheelController(const WheelConfiguration & wheel_conf, mab::Candle * candle, const WheelID & id)
+  : reversed_(wheel_conf.reversed), id_(id)
   {
     motor_ = std::make_unique<mab::MD>(wheel_conf.id, candle);
     connected_ = motor_->init() == mab::MD::Error_t::OK;
@@ -112,7 +112,7 @@ public:
   {
     motor_->zero();
     updateParams(params);
-    setTargetVelocity(0);
+    disable();
   }
 
 
@@ -158,6 +158,10 @@ public:
     motor_->clearErrors();
   }
 
+  /**
+   * Get id of the wheel (FL, FR, RL, RR).
+   */
+  WheelID getID() const {return id_;}
   /**
    * Get the current position of the motor (in rad).
    */
@@ -325,6 +329,7 @@ private:
   std::unique_ptr<mab::MD> motor_;
   WheelParams params_;
   CircularBuffer<std::pair<double, rclcpp::Time>, 100> position_buffer_;
+  WheelID id_;
   bool enabled_{};
   bool connected_{};
   bool reversed_{};

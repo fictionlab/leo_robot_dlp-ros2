@@ -75,14 +75,15 @@ BLDCManager::BLDCManager(rclcpp::NodeOptions options)
     "~/wheel_FL/cmd_velocity",
     "~/wheel_FR/cmd_velocity"
   };
-  wheel_ids_ = {WheelID::RL, WheelID::RR, WheelID::FL, WheelID::FR};
-
+  
+  std::array<WheelID, 4> wheels = {WheelID::RL, WheelID::RR, WheelID::FL, WheelID::FR};
   for (int i = 0; i < 4; ++i) {
+    WheelID id = wheels[i];
     wheel_cmd_vel_subs_[i] = create_subscription<std_msgs::msg::Float32>(
         wheel_cmd_vel_topics[i],
         rclcpp::QoS(5),
-      [this, i](std_msgs::msg::Float32::ConstSharedPtr msg) {
-        wheel_cmd_vel_callback(msg.get(), (void *)&wheel_ids_[i]);
+      [this, id](std_msgs::msg::Float32::ConstSharedPtr msg) {
+        wheel_cmd_vel_callback(msg.get(), (void *)&id);
         }
     );
   }
@@ -98,26 +99,20 @@ BLDCManager::BLDCManager(rclcpp::NodeOptions options)
 void BLDCManager::init_controller()
 {
   if (params_.mecanum_wheels) {
-    controller_ = new MecanumController(ROBOT_CONFIG);
+    controller_ = new MecanumController(ROBOT_CONFIG, get_logger());
   } else {
-    controller_ = new DiffDriveController(ROBOT_CONFIG);
+    controller_ = new DiffDriveController(ROBOT_CONFIG, get_logger());
   }
   mecanum_wheels_ = params_.mecanum_wheels;
 
   RobotParams rp = parse_parameters();
   controller_->init(rp);
+  
   controller_initialized_ = true;
-
-  std::array<bool, 4> connections = controller_->getwheelsConnections();
-  for (int i = 0; i < 4; i++) {
-    if (!connections[i]) {
-      controller_initialized_ = false;
-      RCLCPP_ERROR_STREAM(get_logger(), "Wheel " << wheel_ids_[i] << " not connected!");
-    }
-  }
-  if (controller_initialized_) {
-    RCLCPP_INFO(get_logger(), "All wheels connected. Controller initialized.");
-  }
+  if (controller_->wheelsConnected()) 
+    RCLCPP_INFO(get_logger(), "All wheels connected. Controller initialized.");  
+  else
+    controller_initialized_ = false;
 }
 
 void BLDCManager::fini_controller()

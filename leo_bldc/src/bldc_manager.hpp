@@ -88,7 +88,6 @@ private:
   RobotController * controller_;
   bool controller_initialized_{};
   bool mecanum_wheels_{};
-  std::array<WheelID, 4> wheel_ids_;
 };
 
 } // namespace leo_bldc
