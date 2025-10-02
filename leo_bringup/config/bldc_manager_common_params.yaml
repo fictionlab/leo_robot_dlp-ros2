@@ -14,7 +14,8 @@
     pid_integral_max: 1.0
     profile_velocity: 6.0
     profile_acceleration: 6.0
-    velocity_profile: false
+    motion_mode: 0
+    min_velocity: 0.1
     # Robot controller params
     input_timeout: 500
     effort_timeout: 500
