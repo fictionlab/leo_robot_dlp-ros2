@@ -10,12 +10,12 @@
     wheel_odom_mecanum_twist_covariance_diagonal: [0.0001, 0.0001, 0.0, 0.0, 0.0, 0.001]
     # Wheel controller params
     max_torque: 1.5
-    pid_constants: [0.04, 0.25, 0.0]
-    pid_integral_max: 1.0
+    pid_constants: [0.1, 0.5, 0.0]
+    pid_integral_max: 3.0
     profile_velocity: 6.0
     profile_acceleration: 6.0
-    motion_mode: 0
-    min_velocity: 0.1
+    motion_mode: 0 # 0 - VELOCITY PID, 1 - VELOCITY PROFILE, 2 - IDLE
+    min_velocity: 0.5
     # Robot controller params
     input_timeout: 500
     effort_timeout: 500
