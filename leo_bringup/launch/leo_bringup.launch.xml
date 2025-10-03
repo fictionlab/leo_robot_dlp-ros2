@@ -64,7 +64,7 @@
 
   <node pkg="leo_filters" exec="odom_filter">
     <param name="publish_tf" value="$(var publish_odom_tf)" />
-    <remap from="firmware/reset_odometry" to="bldc_manager/reset_odom" />
+    <remap from="firmware/reset_odometry" to="bldc_manager/reset_odometry" />
   </node>
 
   <node pkg="leo_fw" exec="firmware_parameter_bridge">
