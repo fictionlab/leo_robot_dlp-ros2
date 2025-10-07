@@ -159,10 +159,16 @@ RobotParams BLDCManager::parse_parameters()
   }
 
   // robot controller params
-  rp.robot_wheel_radius = params_.wheel_radius;
-  rp.robot_wheel_separation = params_.wheel_separation;
-  rp.robot_wheel_base = params_.wheel_base;
-  rp.robot_angular_velocity_multiplier = params_.angular_velocity_multiplier;
+  if (params_.mecanum_wheels) {
+    rp.robot_wheel_radius = params_.mecanum.wheel_radius;
+    rp.robot_wheel_separation = params_.mecanum.wheel_separation;
+    rp.robot_wheel_base = params_.mecanum.wheel_base;
+    rp.robot_angular_velocity_multiplier = params_.mecanum.angular_velocity_multiplier;
+  } else {
+    rp.robot_wheel_radius = params_.diff_drive.wheel_radius;
+    rp.robot_wheel_separation = params_.diff_drive.wheel_separation;
+    rp.robot_angular_velocity_multiplier = params_.diff_drive.angular_velocity_multiplier;
+  }
   rp.robot_input_timeout = params_.input_timeout;
   rp.effort_reset_timeout = params_.effort_timeout;
 
