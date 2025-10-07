@@ -56,6 +56,7 @@
   <include file="$(find-pkg-share leo_bldc)/launch/bldc_manager.launch.py">
     <arg name="mecanum_wheels" value="$(var mecanum_wheels)" />
     <arg name="tf_frame_prefix" value="$(var tf_frame_prefix)" />
+    <arg name="params_file" value="$(find-pkg-share leo_bringup)/config/bldc_manager.yaml"/>
   </include>
 
   <node pkg="leo_filters" exec="imu_filter">
