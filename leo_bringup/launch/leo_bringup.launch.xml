@@ -20,6 +20,10 @@
     default=""
     description="Absolute path to the yaml file with firmware parameters to be overrided" />
 
+  <arg name="bldc_override_params_file"
+    default=""
+    description="Absolute path to the yaml file with bldc_manager parameters to be overrided" />
+
   <arg name="publish_odom_tf"
     default="true"
     description="Whether to publish odom -> base_footprint TF" />
@@ -57,6 +61,7 @@
     <arg name="mecanum_wheels" value="$(var mecanum_wheels)" />
     <arg name="tf_frame_prefix" value="$(var tf_frame_prefix)" />
     <arg name="params_file" value="$(find-pkg-share leo_bringup)/config/bldc_manager.yaml"/>
+    <arg name="override_params_file" value="$(var bldc_override_params_file)" />
   </include>
 
   <node pkg="leo_filters" exec="imu_filter">

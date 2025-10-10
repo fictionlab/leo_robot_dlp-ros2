@@ -11,7 +11,8 @@ def launch_setup(context, *args, **kwargs):
         parameters=[
             {"tf_frame_prefix": LaunchConfiguration("tf_frame_prefix")},
             {"mecanum_wheels": LaunchConfiguration("mecanum_wheels")},
-            LaunchConfiguration("params_file")
+            LaunchConfiguration("params_file"),
+            LaunchConfiguration("override_params_file")
         ],
         output="screen"
     )
@@ -37,9 +38,16 @@ def generate_launch_description():
         description="Full path to the YAML parameter file for bldc_manager"
     )
 
+    override_params_file_arg = DeclareLaunchArgument(
+        "override_params_file",
+        default_value="",
+        description="Full path to the YAML override parameter file for bldc_manager"
+    )
+
     return LaunchDescription([
         mecanum_wheels_arg,
         tf_frame_prefix_arg,
         params_file_arg,
+        override_params_file_arg,
         OpaqueFunction(function=launch_setup)
     ])
