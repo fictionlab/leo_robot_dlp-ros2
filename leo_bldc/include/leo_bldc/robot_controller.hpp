@@ -59,7 +59,7 @@ struct RobotParams : WheelParams
   // time. If set to 0, the timeout is disabled.
   int robot_input_timeout;
 
-  // The time (in milliseconds) the robot must remain still before motor 
+  // The time (in milliseconds) the robot must remain still before motor
   // unnecessary efforts are reset.
   int effort_reset_timeout;
 };
@@ -205,12 +205,13 @@ public:
   bool wheelsConnected() const
   {
     bool connected = true;
-    
-    for (auto & wheel : wheels_)
+
+    for (auto & wheel : wheels_) {
       if (!wheel.isConnected()) {
         RCLCPP_ERROR_STREAM(logger_, "Wheel " << wheel.getID() << " not connected!");
         connected = false;
       }
+    }
 
     return connected;
   }
@@ -221,10 +222,11 @@ private:
 protected:
   /**
    * Reset unnecessary efforts on the motors.
-   * Checs if the motors hold effort from previous movement 
+   * Checs if the motors hold effort from previous movement
    * and resets them if those are unnecessary.
    */
-  void resetEffort() {
+  void resetEffort()
+  {
     std::vector<double> efforts;
     std::vector<int> signs;
 
@@ -233,13 +235,15 @@ protected:
       efforts.push_back(effort);
       signs.push_back(effort > 0 ? 1 : -1);
     }
-    
+
     int sum = 0;
-    for(int i = 0; i < 4; i ++) {
+    for(int i = 0; i < 4; i++) {
       sum += signs[i];
     }
 
-    bool has_effort = std::all_of(efforts.begin(), efforts.end(), [](double e){ return std::abs(e) > 0.01; });
+    bool has_effort = std::all_of(efforts.begin(), efforts.end(), [](double e){
+          return std::abs(e) > 0.01;
+                                                                                                         });
 
     if (std::abs(sum) != 4 && has_effort) {
       for(auto & wheel : wheels_) {
@@ -249,10 +253,11 @@ protected:
   }
 
   /**
-   * Check if robot is not moving. 
+   * Check if robot is not moving.
    * Checks if all motors are stopped.
    */
-  bool robotNotMoving() {
+  bool robotNotMoving()
+  {
     for(auto & wheel : wheels_) {
       if (wheel.isMoving()) {
         return false;

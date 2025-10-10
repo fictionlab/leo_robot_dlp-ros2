@@ -64,7 +64,7 @@ public:
     }
 
     if (this->robotNotMoving() && this->target_vel_zero_) {
-      this-> motors_loosen_time_remaining_ -= dt_ms;
+      this->motors_loosen_time_remaining_ -= dt_ms;
       if (this->motors_loosen_time_remaining_ < 0) {
         this->resetEffort();
       }
@@ -72,7 +72,7 @@ public:
       this->motors_loosen_time_remaining_ = this->params_.effort_reset_timeout;
     }
 
-    for (auto& wheel : wheels_) {
+    for (auto & wheel : wheels_) {
       wheel.update(current_time);
     }
 

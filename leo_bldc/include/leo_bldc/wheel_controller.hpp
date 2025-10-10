@@ -234,11 +234,11 @@ public:
     if (params_.profile_velocity != params.profile_velocity) {
       motor_->setProfileVelocity(params.profile_velocity);
     }
-    
+
     if (params_.profile_acceleration != params.profile_acceleration) {
       motor_->setProfileAcceleration(params.profile_acceleration);
     }
-    
+
     updatePID(params.wheel_pid_p, params.wheel_pid_i, params.wheel_pid_d, params.wheel_pid_int_max);
 
     bool new_motion_mode = params_.op_mode != params.op_mode;
@@ -248,7 +248,7 @@ public:
       disable();
       setMotionMode(params_.op_mode);
       // if (params_.op_mode != WheelOperationMode::IDLE)
-        enable(false);
+      enable(false);
     }
   }
 
@@ -265,7 +265,8 @@ public:
   /**
    * Reset effort on the motor.
    */
-  void resetEffort() {
+  void resetEffort()
+  {
     // motor_->setVelocityPIDparam(params_.wheel_pid_p, params_.wheel_pid_i, params_.wheel_pid_d, 0.0);
     // motor_->setVelocityPIDparam(params_.wheel_pid_p, params_.wheel_pid_i, params_.wheel_pid_d, params_.wheel_pid_int_max);
     disable();
@@ -275,7 +276,7 @@ public:
   /**
    * Check if the wheel is currently rotating.
    */
-  bool isMoving() const 
+  bool isMoving() const
   {
     return std::abs(getVelocity()) > params_.min_velocity;
   }

@@ -55,7 +55,8 @@ public:
     this->wheel_FR.setTargetVelocity(wheel_FR_vel);
     this->wheel_RR.setTargetVelocity(wheel_RR_vel);
 
-    this->target_vel_zero_ = std::abs(linear_x) <= 0.01 && std::abs(linear_y) <= 0.02 && std::abs(angular) <= 0.02;
+    this->target_vel_zero_ = std::abs(linear_x) <= 0.01 && std::abs(linear_y) <= 0.02 &&
+      std::abs(angular) <= 0.02;
   }
 
   void update(uint32_t dt_ms, rclcpp::Time current_time) override
@@ -69,7 +70,7 @@ public:
     }
 
     if (this->robotNotMoving() && this->target_vel_zero_) {
-      this-> motors_loosen_time_remaining_ -= dt_ms;
+      this->motors_loosen_time_remaining_ -= dt_ms;
       if (this->motors_loosen_time_remaining_ < 0) {
         this->resetEffort();
       }
@@ -77,7 +78,7 @@ public:
       this->motors_loosen_time_remaining_ = this->params_.effort_reset_timeout;
     }
 
-    for (auto& wheel : wheels_) {
+    for (auto & wheel : wheels_) {
       wheel.update(current_time);
     }
 
