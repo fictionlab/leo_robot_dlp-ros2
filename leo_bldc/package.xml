@@ -3,7 +3,7 @@
 <package format="3">
   <name>leo_bldc</name>
   <version>1.0.0</version>
-  <description>Nodes for operating bldc motored rover.</description>
+  <description>Nodes for operating Leo Rover with BLDC motors.</description>
 
   <maintainer email="support@fictionlab.pl">Fictionlab</maintainer>
 
