@@ -18,11 +18,11 @@
 
   <arg name="firmware_override_params_file"
     default=""
-    description="Absolute path to the yaml file with firmware parameters to be overrided" />
+    description="Absolute path to the yaml file with firmware parameters to be overridden" />
 
   <arg name="bldc_override_params_file"
     default=""
-    description="Absolute path to the yaml file with bldc_manager parameters to be overrided" />
+    description="Absolute path to the yaml file with bldc_manager parameters to be overridden" />
 
   <arg name="publish_odom_tf"
     default="true"
