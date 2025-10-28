@@ -37,8 +37,8 @@ inline std::string wheelID_to_string(WheelID id)
     case WheelID::RL: return "RL";
     case WheelID::FR: return "FR";
     case WheelID::RR: return "RR";
+    default: return "Unknown";
   }
-  return "Unknown";
 }
 
 inline std::ostream & operator<<(std::ostream & os, WheelID id)
