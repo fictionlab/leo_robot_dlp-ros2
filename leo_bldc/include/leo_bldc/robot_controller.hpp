@@ -30,6 +30,9 @@
 namespace leo_bldc
 {
 
+// Number of wheels the robot is using
+constexpr uint8_t NUMBER_OF_WHEELS = 4;
+
 struct RobotConfiguration
 {
   WheelConfiguration wheel_FL_conf;
@@ -136,11 +139,11 @@ public:
   sensor_msgs::msg::JointState getJointState() const
   {
     sensor_msgs::msg::JointState js;
-    js.velocity.resize(4);
-    js.position.resize(4);
-    js.effort.resize(4);
+    js.velocity.resize(NUMBER_OF_WHEELS);
+    js.position.resize(NUMBER_OF_WHEELS);
+    js.effort.resize(NUMBER_OF_WHEELS);
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < NUMBER_OF_WHEELS; i++) {
       js.velocity[i] = wheels_[i].getVelocity();
       js.position[i] = wheels_[i].getPosition();
       js.effort[i] = wheels_[i].getTorque();
@@ -237,7 +240,7 @@ protected:
     }
 
     int sum = 0;
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < NUMBER_OF_WHEELS; i++) {
       sum += signs[i];
     }
 
@@ -245,7 +248,7 @@ protected:
           return std::abs(e) > 0.01;
                                                                                                          });
 
-    if (std::abs(sum) != 4 && has_effort) {
+    if (std::abs(sum) != NUMBER_OF_WHEELS && has_effort) {
       for(auto & wheel : wheels_) {
         wheel.resetEffort();
       }
