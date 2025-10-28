@@ -22,6 +22,7 @@
 
 #include "leo_bldc/robot_controller.hpp"
 
+// Robot configuration for Leo Rover v1.9 or later
 constexpr leo_bldc::RobotConfiguration ROBOT_CONFIG = {
   .wheel_FL_conf =
   {
