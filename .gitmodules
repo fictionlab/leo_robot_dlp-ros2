@@ -1,0 +1,3 @@
+[submodule "CANdle-SDK"]
+	path = leo_bldc/CANdle-SDK
+	url = git@github.com:fictionlab/CANdle-SDK.git

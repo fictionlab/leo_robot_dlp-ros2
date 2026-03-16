@@ -18,7 +18,11 @@
 
   <arg name="firmware_override_params_file"
     default=""
-    description="Absolute path to the yaml file with firmware parameters to be overrided" />
+    description="Absolute path to the yaml file with firmware parameters to be overridden" />
+
+  <arg name="bldc_override_params_file"
+    default=""
+    description="Absolute path to the yaml file with bldc_manager parameters to be overridden" />
 
   <arg name="publish_odom_tf"
     default="true"
@@ -53,21 +57,24 @@
     <param from="$(find-pkg-share leo_bringup)/config/firmware_message_converter.yaml" />
   </node>
 
+  <include file="$(find-pkg-share leo_bldc)/launch/bldc_manager.launch.py">
+    <arg name="mecanum_wheels" value="$(var mecanum_wheels)" />
+    <arg name="tf_frame_prefix" value="$(var tf_frame_prefix)" />
+    <arg name="params_file" value="$(find-pkg-share leo_bringup)/config/bldc_manager.yaml"/>
+    <arg name="override_params_file" value="$(var bldc_override_params_file)" />
+  </include>
+
   <node pkg="leo_filters" exec="imu_filter">
     <param from="$(find-pkg-share leo_bringup)/config/imu_filter.yaml" />
   </node>
 
   <node pkg="leo_filters" exec="odom_filter">
     <param name="publish_tf" value="$(var publish_odom_tf)" />
+    <remap from="firmware/reset_odometry" to="bldc_manager/reset_odometry" />
   </node>
 
-  <let if="$(var mecanum_wheels)" name="firmware_default_params_file"
-    value="$(find-pkg-share leo_bringup)/config/firmware_mecanum_params.yaml" />
-  <let unless="$(var mecanum_wheels)" name="firmware_default_params_file"
-    value="$(find-pkg-share leo_bringup)/config/firmware_diff_drive_params.yaml" />
-
   <node pkg="leo_fw" exec="firmware_parameter_bridge">
-    <param name="default_params_file_path" value="$(var firmware_default_params_file)" />
+    <param name="default_params_file_path" value="$(find-pkg-share leo_bringup)/config/firmware_params.yaml" />
     <param name="override_params_file_path" value="$(var firmware_override_params_file)" />
     <param name="leo_hardware_version" value="$(var leo_hardware_version)" />
   </node>
